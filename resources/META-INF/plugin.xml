@@ -1,0 +1,41 @@
+<idea-plugin>
+  <id>com.easycodingnow.fastman</id>
+  <name>fastman</name>
+  <version>1.0</version>
+  <vendor email="953445224@qq.com">shareli</vendor>
+
+  <description><![CDATA[
+      只适用spring web相关的项目的快速调试 <br>
+      快速执行spring 管理的bean的任意方法.<br>
+      用于代码调试阶段，方便我们对代码进行调试.<br>
+    ]]></description>
+
+  <change-notes><![CDATA[
+      1.在任意spring bean的方法上方，右键选择fastrun,进行快速代码调试
+    ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="173.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends>
+  -->
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+    <applicationConfigurable groupId="other" instance="com.easycodingnow.fastman.intellij.common.Configurable"/>
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+    <action id="RunService" class="com.easycodingnow.fastman.intellij.action.RunService"
+            text="fastRun" >
+      <keyboard-shortcut first-keystroke="shift ctrl 1" keymap="$default"/>
+      <add-to-group group-id="EditorLangPopupMenu" anchor="first"/>
+    </action>
+  </actions>
+
+</idea-plugin>
