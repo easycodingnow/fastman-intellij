@@ -31,11 +31,19 @@
 
   <actions>
     <!-- Add your actions here -->
-    <action id="RunService" class="com.easycodingnow.fastman.intellij.action.RunService"
+    <action id="FastManAgainRunService" class="com.easycodingnow.fastman.intellij.action.AgainRunServiceAction"
+            text="fastRunRecent" >
+      <keyboard-shortcut first-keystroke="shift ctrl 2" keymap="$default"/>
+      <add-to-group group-id="EditorLangPopupMenu" anchor="first"/>
+    </action>
+
+    <action id="FastManRunService" class="com.easycodingnow.fastman.intellij.action.RunServiceAction"
             text="fastRun" >
       <keyboard-shortcut first-keystroke="shift ctrl 1" keymap="$default"/>
       <add-to-group group-id="EditorLangPopupMenu" anchor="first"/>
     </action>
+
+
   </actions>
 
 </idea-plugin>

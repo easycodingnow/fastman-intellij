@@ -3,7 +3,10 @@ package com.easycodingnow.fastman.intellij.action;
 import com.easycodingnow.fastman.intellij.UiUtil;
 import com.easycodingnow.fastman.intellij.common.ConfigData;
 import com.easycodingnow.fastman.intellij.common.GlobalConfig;
+import com.easycodingnow.fastman.intellij.common.Request;
+import com.easycodingnow.fastman.intellij.common.RunService;
 import com.google.gson.Gson;
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -13,11 +16,6 @@ import com.intellij.psi.*;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.javadoc.PsiDocTag;
 import com.intellij.psi.util.PsiTreeUtil;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +25,7 @@ import java.util.List;
 /**
  * @author lihao
  */
-public class RunService  extends AnAction {
+public class RunServiceAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
@@ -66,6 +64,7 @@ public class RunService  extends AnAction {
             UiUtil.error("缺少执行入参@test的注释！", project);
             return;
         }
+        boolean hasTestTag = false;
         for (PsiDocTag psiDocTag:psiDocComment.getTags()) {
             if ("test".equals(psiDocTag.getName())) {
                 String requestBody = psiDocTag.getText().substring(5)
@@ -77,8 +76,14 @@ public class RunService  extends AnAction {
                     return;
                 }
                 request.setParams(requestBody);
+                hasTestTag = true;
                 break;
             }
+        }
+
+        if (!hasTestTag) {
+            UiUtil.error("缺少执行入参@test的注释！", project);
+            return;
         }
 
 
@@ -100,70 +105,10 @@ public class RunService  extends AnAction {
             return;
         }
         String url = configData.getPath();
-        new Thread(() -> {
-            PostMethod postMethod = new PostMethod(url);
-            HttpClient client = new HttpClient();
-            try {
-                client.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
-                postMethod.setRequestEntity(new StringRequestEntity(new Gson().toJson(request), "application/json", "UTF-8"));
-                client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-                int status = client.executeMethod(postMethod);
-                if (status == HttpStatus.SC_OK) {
-                    UiUtil.ok("请求成功! 返回值: " + postMethod.getResponseBodyAsString(), project);
-                } else {
-                    UiUtil.error("执行失败！http错误码: " + status, project);
-                }
-            } catch (Exception ex) {
-                UiUtil.error("执行失败: " + ex.getMessage(), project);
-            } finally {
-                postMethod.releaseConnection();
-            }
-        }).start();
+        RunService.postAgent(url, request, project);
+        configData.setRecentRequest(request);
+        PropertiesComponent.getInstance().setValue(GlobalConfig.CONFIG_KEY, new Gson().toJson(configData));
     }
-
-    public  static  class Request {
-
-        private String className;
-
-        private String methodName;
-
-        private String params;
-
-        private List<String> paramTypes;
-
-        public String getClassName() {
-            return className;
-        }
-
-        public void setClassName(String className) {
-            this.className = className;
-        }
-
-        public String getMethodName() {
-            return methodName;
-        }
-
-        public void setMethodName(String methodName) {
-            this.methodName = methodName;
-        }
-
-        public String getParams() {
-            return params;
-        }
-
-        public void setParams(String params) {
-            this.params = params;
-        }
-
-        public List<String> getParamTypes() {
-            return paramTypes;
-        }
-
-        public void setParamTypes(List<String> paramTypes) {
-            this.paramTypes = paramTypes;
-        }
-    }
-
 
 
 }

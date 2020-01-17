@@ -6,26 +6,8 @@ package com.easycodingnow.fastman.intellij.common;
 public class ConfigData {
     private String path;
 
-    private String dubboHost;
+    private Request recentRequest;
 
-    private String dubboGroup;
-
-
-    public String getDubboGroup() {
-        return dubboGroup;
-    }
-
-    public void setDubboGroup(String dubboGroup) {
-        this.dubboGroup = dubboGroup;
-    }
-
-    public String getDubboHost() {
-        return dubboHost;
-    }
-
-    public void setDubboHost(String dubboHost) {
-        this.dubboHost = dubboHost;
-    }
 
     public String getPath() {
         return path;
@@ -33,5 +15,13 @@ public class ConfigData {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public Request getRecentRequest() {
+        return recentRequest;
+    }
+
+    public void setRecentRequest(Request recentRequest) {
+        this.recentRequest = recentRequest;
     }
 }
